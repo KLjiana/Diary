@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "diary:item/diary_paper1"
+  },
+  "overrides": [
+    {
+      "predicate": { "custom_model_data": 1 },
+      "model": "diary:item/diary_paper1"
+    },
+    {
+      "predicate": { "custom_model_data": 2 },
+      "model": "diary:item/diary_paper2"
+    },
+    {
+      "predicate": { "custom_model_data": 3 },
+      "model": "diary:item/diary_paper3"
+    }
+  ]
+}

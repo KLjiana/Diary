@@ -12,4 +12,5 @@ public class ItemInit {
     public static final DeferredRegister<Item> ITEM = DeferredRegister.create(ForgeRegistries.ITEMS, DiaryMod.MODID);
     public static final RegistryObject<Item> DIARY_PAPER = ITEM.register("diary_paper", DiaryPaperItem::new);
     public static final RegistryObject<Item> DIARY = ITEM.register("diary", DiaryItem::new);
+    public static final RegistryObject<Item> COVER = ITEM.register("cover", ()-> new Item(new Item.Properties()));
 }

@@ -46,6 +46,7 @@ public class DiaryMod {
                 itemStack.addTagElement("diary_type", StringTag.valueOf(type));
                 itemStacks.add(itemStack);
             }
+            itemStackNonNullList.add(ItemInit.COVER.get().getDefaultInstance());
             itemStackNonNullList.addAll(itemStacks);
         }
     };
