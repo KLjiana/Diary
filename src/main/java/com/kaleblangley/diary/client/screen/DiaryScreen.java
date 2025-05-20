@@ -1,6 +1,7 @@
 package com.kaleblangley.diary.client.screen;
 
-import com.kaleblangley.diary.diary.Diary;
+import com.kaleblangley.diary.DiaryMod;
+import com.kaleblangley.diary.diary.DiaryPaper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
@@ -12,20 +13,22 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiaryScreen extends Screen {
+    public static final ResourceLocation BOOK_LOCATION = new ResourceLocation(DiaryMod.MODID, "textures/gui/book.png");
     private String[] texts;
     private int maxPage;
     private int page = 0;
     private PageButton forwardButton;
     private PageButton backButton;
 
-    public DiaryScreen(Diary diary) {
-        this(diary.texts);
+    public DiaryScreen(DiaryPaper diaryPaper) {
+        this(diaryPaper.texts());
     }
 
     public DiaryScreen(String[] texts) {
@@ -35,8 +38,8 @@ public class DiaryScreen extends Screen {
 
     @Override
     protected void init() {
-        this.texts = this.split(this.texts, 114);
-        this.maxPage = texts.length / 16-1;
+        this.texts = this.split(this.texts, 102);
+        this.maxPage = texts.length / 16;
         this.addRenderableWidget(new Button(this.width / 2 - 100, 196, 200, 20, CommonComponents.GUI_DONE, button -> this.minecraft.setScreen(null)));
         this.createPageControlButtons();
     }
@@ -76,7 +79,7 @@ public class DiaryScreen extends Screen {
         this.renderBackground(poseStack);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, BookViewScreen.BOOK_LOCATION);
+        RenderSystem.setShaderTexture(0, BOOK_LOCATION);
         int x = (this.width - 192) / 2;
         this.blit(poseStack, x, 2, 0, 0, 192, 192);
 
@@ -86,7 +89,7 @@ public class DiaryScreen extends Screen {
 
         for (int i = startLine; i < endLine; i++) {
             int lineOffset = i - startLine;
-            this.font.draw(poseStack, Component.nullToEmpty(this.texts[i]), x + 36, 18 + lineOffset * 9, 0x00000000);
+            this.font.draw(poseStack, Component.nullToEmpty(this.texts[i]), x + 48, 18 + lineOffset * 9, 0x00000000);
         }
 
         super.render(poseStack, mouseX, mouseY, partialTick);

@@ -2,6 +2,7 @@ package com.kaleblangley.diary.item;
 
 import com.kaleblangley.diary.client.screen.DiaryScreen;
 import com.kaleblangley.diary.diary.Diary;
+import com.kaleblangley.diary.diary.DiaryPaper;
 import com.kaleblangley.diary.diary.data.DiaryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -15,9 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class DiaryItem extends Item {
     public DiaryItem() {
@@ -28,10 +27,10 @@ public class DiaryItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide) {
             ItemStack itemStack = player.getItemInHand(usedHand);
-            List<Diary> diaries = getDiaries(itemStack);
-            if (!diaries.isEmpty()) {
-                String[] texts = diaries.stream()
-                        .flatMap(diary -> Arrays.stream(diary.texts))
+            Diary diaries = getDiaries(itemStack);
+            if (diaries!=null) {
+                String[] texts = Arrays.stream(diaries.diaryPapers())
+                        .flatMap(diary -> Arrays.stream(diary.texts()))
                         .toArray(String[]::new);
                 Minecraft.getInstance().setScreen(new DiaryScreen(texts));
                 return InteractionResultHolder.success(itemStack);
@@ -42,9 +41,9 @@ public class DiaryItem extends Item {
 
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
-        String diary = getType(stack);
-        if (diary != null && !diary.isEmpty()) {
-            return new TranslatableComponent("item.diary.%s".formatted(diary));
+        Diary diaryPaper = getDiaries(stack);
+        if (diaryPaper !=null) {
+            return new TranslatableComponent(diaryPaper.title());
         }
         return super.getName(stack);
     }
@@ -57,7 +56,7 @@ public class DiaryItem extends Item {
         return "";
     }
 
-    public List<Diary> getDiaries(ItemStack itemStack) {
+    public Diary getDiaries(ItemStack itemStack) {
         return DiaryManager.getTypeValue(getType(itemStack));
     }
 }

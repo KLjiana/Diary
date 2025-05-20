@@ -20,7 +20,7 @@ import java.util.List;
 @Mod(DiaryMod.MODID)
 public class DiaryMod {
     public static final String MODID = "diary";
-    public static final Logger LOGGER = LoggerFactory.getLogger("examples");
+    public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
     public DiaryMod(){
         IEventBus modBusEvent = FMLJavaModLoadingContext.get().getModEventBus();
         ItemInit.ITEM.register(modBusEvent);

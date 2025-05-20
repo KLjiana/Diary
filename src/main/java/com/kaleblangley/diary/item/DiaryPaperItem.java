@@ -1,7 +1,7 @@
 package com.kaleblangley.diary.item;
 
 import com.kaleblangley.diary.client.screen.DiaryScreen;
-import com.kaleblangley.diary.diary.Diary;
+import com.kaleblangley.diary.diary.DiaryPaper;
 import com.kaleblangley.diary.diary.data.DiaryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -24,9 +24,9 @@ public class DiaryPaperItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide) {
             ItemStack itemStack = player.getItemInHand(usedHand);
-            Diary diary = getDiary(itemStack);
-            if (diary != null) {
-                Minecraft.getInstance().setScreen(new DiaryScreen(diary));
+            DiaryPaper diaryPaper = getDiary(itemStack);
+            if (diaryPaper != null) {
+                Minecraft.getInstance().setScreen(new DiaryScreen(diaryPaper));
                 return InteractionResultHolder.success(itemStack);
             }
         }
@@ -35,14 +35,14 @@ public class DiaryPaperItem extends Item {
 
     @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
-        Diary diary = getDiary(stack);
-        if (diary!=null){
-            return new TranslatableComponent(diary.title);
+        DiaryPaper diaryPaper = getDiary(stack);
+        if (diaryPaper !=null){
+            return new TranslatableComponent(diaryPaper.title());
         }
         return super.getName(stack);
     }
 
-    public Diary getDiary(ItemStack itemStack){
+    public DiaryPaper getDiary(ItemStack itemStack){
         CompoundTag tag = itemStack.getTag();
         if (tag != null) {
             return DiaryManager.getDiaryValue(tag.getString("diary_id"));
