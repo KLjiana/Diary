@@ -26,31 +26,4 @@ public class ForgeEvent {
         event.addListener(new DiaryPaperLoader());
         event.addListener(new DiaryLoader());
     }
-
-    @SubscribeEvent
-    public static void chatReplace(ServerChatEvent event) {
-        String message = event.getMessage();
-        ServerPlayer serverPlayer = event.getPlayer();
-        if (message.contains("<structure>") && message.contains("</structure>")) {
-            String structure = message.replaceAll(".*<structure>(.*?)</structure>.*", "$1");
-            BlockPos center = serverPlayer.blockPosition();
-            Optional<Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>>> holderPair = StructureLocator.findNearest(
-                    serverPlayer.getLevel(),
-                    center,
-                    new ResourceLocation(structure),
-                    100,
-                    false
-            );
-            AtomicReference<String> replace = new AtomicReference<>();
-            holderPair.ifPresentOrElse(pair -> {
-                Component component = StructureLocator.formatLocateResult(structure, center, pair, "commands.locate.success");
-                replace.set(component.getString());
-            }, () -> {
-                replace.set(new TranslatableComponent("commands.locate.failed", structure).getString());
-            });
-            Style style = event.getComponent().getStyle();
-            MutableComponent mutableComponent = new TextComponent(message.replaceAll("<structure>(.*?)</structure>", "§a%s§r".formatted(replace.get()))).withStyle(style);
-            event.setComponent(mutableComponent);
-        }
-    }
 }

@@ -39,7 +39,7 @@ public class DiaryScreen extends Screen {
     @Override
     protected void init() {
         this.texts = this.split(this.texts, 102);
-        this.maxPage = texts.length / 16;
+        this.maxPage = (texts.length - 1) / 16;
         this.addRenderableWidget(new Button(this.width / 2 - 100, 196, 200, 20, CommonComponents.GUI_DONE, button -> this.minecraft.setScreen(null)));
         this.createPageControlButtons();
     }

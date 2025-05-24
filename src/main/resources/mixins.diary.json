@@ -1,14 +1,15 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.kaleblangley.examples.mixin",
+  "package": "com.kaleblangley.diary.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ServerPlayerMixin"
   ],
   "client": [
   ],
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "mixins.examples.refmap.json"
+  "refmap": "mixins.diary.refmap.json"
 }
