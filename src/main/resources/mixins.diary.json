@@ -11,5 +11,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "mixins.diary.refmap.json"
+  "refmap": "diary.refmap.json"
 }
