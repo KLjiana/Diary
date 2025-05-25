@@ -34,7 +34,7 @@ public class ServerPlayerMixin {
             );
             AtomicReference<String> replace = new AtomicReference<>();
             holderPair.ifPresentOrElse(pair -> {
-                Component component1 = StructureLocator.formatLocateResult(structure, center, pair, "commands.locate.success");
+                Component component1 = StructureLocator.formatLocateResult(structure, center, pair, "message.diary.locate");
                 replace.set(component1.getString());
             }, () -> {
                 replace.set(new TranslatableComponent("commands.locate.failed", structure).getString());

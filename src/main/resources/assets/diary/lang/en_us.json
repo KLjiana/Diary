@@ -2,5 +2,6 @@
   "itemGroup.diary": "Diary",
   "item.diary.diary": "Diary",
   "item.diary.diary_paper": "Diary Paper",
-  "item.diary.cover": "Book Cover"
+  "item.diary.cover": "Book Cover",
+  "message.diary.locate": "%s (%s blocks away)"
 }

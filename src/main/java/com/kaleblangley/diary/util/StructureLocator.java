@@ -113,7 +113,7 @@ public class StructureLocator {
                 );
 
         return new TranslatableComponent(
-                translateKey, structureName, coords, distance
+                translateKey, coords, distance
         );
     }
 
