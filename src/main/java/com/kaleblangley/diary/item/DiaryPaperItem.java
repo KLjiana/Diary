@@ -5,18 +5,18 @@ import com.kaleblangley.diary.diary.DiaryPaper;
 import com.kaleblangley.diary.diary.data.DiaryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 public class DiaryPaperItem extends Item {
@@ -27,14 +27,19 @@ public class DiaryPaperItem extends Item {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide) {
-            ItemStack itemStack = player.getItemInHand(usedHand);
-            DiaryPaper diaryPaper = getDiary(itemStack);
-            if (diaryPaper != null) {
-                Minecraft.getInstance().setScreen(new DiaryScreen(diaryPaper));
-                return InteractionResultHolder.success(itemStack);
-            }
+            return openScreen(player.getItemInHand(usedHand), player, usedHand);
         }
         return super.use(level, player, usedHand);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private InteractionResultHolder<ItemStack> openScreen(ItemStack itemStack, Player player, InteractionHand usedHand) {
+        DiaryPaper diaryPaper = getDiary(itemStack);
+        if (diaryPaper != null) {
+            Minecraft.getInstance().setScreen(new DiaryScreen(diaryPaper));
+            return InteractionResultHolder.success(player.getItemInHand(usedHand));
+        }
+        return InteractionResultHolder.fail(player.getItemInHand(usedHand));
     }
 
     @Override

@@ -14,6 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -27,16 +29,22 @@ public class DiaryItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide) {
             ItemStack itemStack = player.getItemInHand(usedHand);
-            Diary diaries = getDiaries(itemStack);
-            if (diaries!=null) {
-                String[] texts = Arrays.stream(diaries.diaryPapers())
-                        .flatMap(diary -> Arrays.stream(diary.texts()))
-                        .toArray(String[]::new);
-                Minecraft.getInstance().setScreen(new DiaryScreen(texts));
-                return InteractionResultHolder.success(itemStack);
-            }
+            return openScreen(itemStack, player, usedHand);
         }
         return super.use(level, player, usedHand);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private InteractionResultHolder<ItemStack> openScreen(ItemStack itemStack, Player player, InteractionHand usedHand) {
+        Diary diaries = getDiaries(itemStack);
+        if (diaries!=null) {
+            String[] texts = Arrays.stream(diaries.diaryPapers())
+                    .flatMap(diary -> Arrays.stream(diary.texts()))
+                    .toArray(String[]::new);
+            Minecraft.getInstance().setScreen(new DiaryScreen(texts));
+            return InteractionResultHolder.success(itemStack);
+        }
+        return InteractionResultHolder.fail(player.getItemInHand(usedHand));
     }
 
     @Override
