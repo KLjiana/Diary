@@ -12,24 +12,24 @@ public class DiaryManager {
     private final static Set<String> diaryViewMap = Collections.unmodifiableSet(paperMap.keySet());
     private final static Set<String> typeViewMap = Collections.unmodifiableSet(bookMap.keySet());
 
-    static void paperRegister(String id, DiaryPaper diaryPaper) {
+    public static void paperRegister(String id, DiaryPaper diaryPaper) {
         if (paperMap.containsKey(id)) {
             throw new IllegalArgumentException("ID conflict with code-defined dialogue: " + id);
         }
         paperMap.put(id, diaryPaper);
     }
 
-    static void bookRegister(String id, Diary diaryPaper) {
+    public static void bookRegister(String id, Diary diaryPaper) {
         if (bookMap.containsKey(id)) {
             throw new IllegalArgumentException("ID conflict with code-defined dialogue: " + id);
         }
         bookMap.put(id, diaryPaper);
     }
 
-    static void clearPaperData() {
+    public static void clearPaperData() {
         paperMap.clear();
     }
-    static void clearBookData() {
+    public static void clearBookData() {
         bookMap.clear();
     }
 
@@ -38,6 +38,14 @@ public class DiaryManager {
     }
     public static Set<String> getTypeMapView() {
         return typeViewMap;
+    }
+
+    public static Map<String, Diary> getBookMap() {
+        return bookMap;
+    }
+
+    public static Map<String, DiaryPaper> getPaperMap() {
+        return paperMap;
     }
 
     public static DiaryPaper getDiaryValue(@Nullable String id) {

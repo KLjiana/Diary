@@ -2,6 +2,7 @@ package com.kaleblangley.diary;
 
 import com.kaleblangley.diary.diary.data.DiaryManager;
 import com.kaleblangley.diary.init.ItemInit;
+import com.kaleblangley.diary.network.Network;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.item.CreativeModeTab;
@@ -24,6 +25,7 @@ public class DiaryMod {
     public DiaryMod(){
         IEventBus modBusEvent = FMLJavaModLoadingContext.get().getModEventBus();
         ItemInit.ITEM.register(modBusEvent);
+        Network.register();
     }
     public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(MODID) {
         @Override
