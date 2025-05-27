@@ -38,9 +38,12 @@ public class ForgeEvent {
         if (event.getPlayer() == null) {
             PlayerList playerList = event.getPlayerList();
             for (ServerPlayer serverPlayer : playerList.getPlayers()) {
-                Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer),
+                Network.CHANNEL.send(PacketDistributor.PLAYER.with(()->serverPlayer),
                         new SyncDiaryDataPacket(DiaryManager.getPaperMap(), DiaryManager.getBookMap()));
             }
+        } else {
+            Network.CHANNEL.send(PacketDistributor.PLAYER.with(event::getPlayer),
+                    new SyncDiaryDataPacket(DiaryManager.getPaperMap(), DiaryManager.getBookMap()));
         }
     }
 }
