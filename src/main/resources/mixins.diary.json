@@ -4,7 +4,10 @@
   "package": "com.kaleblangley.diary.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ServerPlayerMixin"
+    "OutgoingChatMessagePlayerMixin",
+    "ServerPlayerMixin",
+    "accessor.PlayerChatMessageAccessor",
+    "accessor.SignedMessageBodyAccessor"
   ],
   "client": [
   ],

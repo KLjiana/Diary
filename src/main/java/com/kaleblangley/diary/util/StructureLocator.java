@@ -1,27 +1,29 @@
 package com.kaleblangley.diary.util;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StructureLocator {
-    private static final ResourceKey<Registry<ConfiguredStructureFeature<?, ?>>> STRUCTURE_REGISTRY_KEY =
-            Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY;
+    private static final ResourceKey<Registry<Structure>> STRUCTURE_REGISTRY_KEY =
+            Registries.STRUCTURE;
 
     /**
      * 根据单个结构 ResourceLocation（如 "minecraft:village" 或者自定义 mod:id）查找最近的那个点。
@@ -33,28 +35,28 @@ public class StructureLocator {
      * @param skipKnown 是否跳过已探索过的结构
      * @return 如果找到，返回 Pair(结构坐标, Holder<该结构>); 找不到则 empty()
      */
-    public static Optional<Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>>> findNearest(
+    public static Optional<Pair<BlockPos, Holder<Structure>>> findNearest(
             ServerLevel level,
             BlockPos center,
             ResourceLocation id,
             int radius,
             boolean skipKnown
     ) {
-        Registry<ConfiguredStructureFeature<?, ?>> registry =
+        Registry<Structure> registry =
                 level.registryAccess().registryOrThrow(STRUCTURE_REGISTRY_KEY);
 
-        ResourceKey<ConfiguredStructureFeature<?, ?>> key =
+        ResourceKey<Structure> key =
                 ResourceKey.create(STRUCTURE_REGISTRY_KEY, id);
 
-        Holder<ConfiguredStructureFeature<?, ?>> holder =
+        Holder<Structure> holder =
                 registry.getHolder(key).orElse(null);
         if (holder == null) return Optional.empty();
 
-        HolderSet<ConfiguredStructureFeature<?, ?>> holderSet = HolderSet.direct(holder);
-        Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> result =
+        HolderSet<Structure> holderSet = HolderSet.direct(holder);
+        Pair<BlockPos, Holder<Structure>> result =
                 level.getChunkSource()
                         .getGenerator()
-                        .findNearestMapFeature(level, holderSet, center, radius, skipKnown);
+                        .findNearestMapStructure(level, holderSet, center, radius, skipKnown);
 
         return Optional.ofNullable(result);
     }
@@ -69,22 +71,22 @@ public class StructureLocator {
      * @param skipKnown 是否跳过已探索结构
      * @return 如果找到，返回 Pair(结构坐标, Holder<该结构>); 找不到则 empty()
      */
-    public static Optional<Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>>> findNearestByTag(
+    public static Optional<Pair<BlockPos, Holder<Structure>>> findNearestByTag(
             ServerLevel level,
             BlockPos center,
-            TagKey<ConfiguredStructureFeature<?, ?>> tagKey,
+            TagKey<Structure> tagKey,
             int radius,
             boolean skipKnown
     ) {
-        Registry<ConfiguredStructureFeature<?, ?>> registry =
+        Registry<Structure> registry =
                 level.registryAccess().registryOrThrow(STRUCTURE_REGISTRY_KEY);
 
-        HolderSet<ConfiguredStructureFeature<?, ?>> holderSet =
+        HolderSet<Structure> holderSet =
                 registry.getOrCreateTag(tagKey);
-        Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> result =
+        Pair<BlockPos, Holder<Structure>> result =
                 level.getChunkSource()
                         .getGenerator()
-                        .findNearestMapFeature(level, holderSet, center, radius, skipKnown);
+                        .findNearestMapStructure(level, holderSet, center, radius, skipKnown);
 
         return Optional.ofNullable(result);
     }
@@ -100,7 +102,7 @@ public class StructureLocator {
     public static Component formatLocateResult(
             String structureName,
             BlockPos origin,
-            Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> pair,
+            Pair<BlockPos, Holder<Structure>> pair,
             String translateKey
     ) {
         BlockPos found = pair.getFirst();
@@ -109,10 +111,10 @@ public class StructureLocator {
         );
 
         MutableComponent coords = ComponentUtils.wrapInSquareBrackets(
-                        new TranslatableComponent("chat.coordinates", found.getX(), "~", found.getZ())
+                        Component.translatable("chat.coordinates", found.getX(), "~", found.getZ())
                 );
 
-        return new TranslatableComponent(
+        return Component.translatable(
                 translateKey, coords, distance
         );
     }
@@ -120,5 +122,31 @@ public class StructureLocator {
     private static float dist(int x1, int z1, int x2, int z2) {
         int dx = x2 - x1, dz = z2 - z1;
         return Mth.sqrt((float) (dx * dx + dz * dz));
+    }
+
+    public static Component modifyMessage(Component component, ServerPlayer serverPlayer){
+        MutableComponent mutableComponent = component.copy();
+        String message = mutableComponent.getString();
+        if (message.contains("<structure>") && message.contains("</structure>")) {
+            String structure = message.replaceAll(".*<structure>(.*?)</structure>.*", "$1");
+            BlockPos center = serverPlayer.blockPosition();
+            Optional<Pair<BlockPos, Holder<Structure>>> holderPair = StructureLocator.findNearest(
+                    serverPlayer.serverLevel(),
+                    center,
+                    new ResourceLocation(structure),
+                    100,
+                    false
+            );
+            AtomicReference<String> replace = new AtomicReference<>();
+            holderPair.ifPresentOrElse(pair -> {
+                Component component1 = StructureLocator.formatLocateResult(structure, center, pair, "message.diary.locate");
+                replace.set(component1.getString());
+            }, () -> {
+                replace.set(Component.translatable("commands.locate.failed", structure).getString());
+            });
+            Style style = component.getStyle();
+            mutableComponent = Component.literal(message.replaceAll("<structure>(.*?)</structure>", "§a%s§r".formatted(replace.get()))).withStyle(style);
+        }
+        return mutableComponent;
     }
 }
