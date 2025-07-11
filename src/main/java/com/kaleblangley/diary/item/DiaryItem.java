@@ -2,7 +2,6 @@ package com.kaleblangley.diary.item;
 
 import com.kaleblangley.diary.client.screen.DiaryScreen;
 import com.kaleblangley.diary.diary.Diary;
-import com.kaleblangley.diary.diary.DiaryPaper;
 import com.kaleblangley.diary.diary.data.DiaryManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;

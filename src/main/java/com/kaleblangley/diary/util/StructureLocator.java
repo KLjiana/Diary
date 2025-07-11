@@ -1,7 +1,6 @@
 package com.kaleblangley.diary.util;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -92,13 +91,11 @@ public class StructureLocator {
     /**
      * 把查到的结果格式化成一个聊天用的组件（绿色坐标 + 距离）。
      *
-     * @param structureName 你想显示的结构名称（如 "minecraft:village" 或 "#minecraft:village"）
      * @param origin        搜索中心
      * @param pair          findNearest 返回的 Pair
      * @param translateKey  翻译 key，通常用 "commands.locate.success"
      */
     public static Component formatLocateResult(
-            String structureName,
             BlockPos origin,
             Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> pair,
             String translateKey

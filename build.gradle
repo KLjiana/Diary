@@ -65,10 +65,10 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "mixins.${mod_id}.json"
-}
+//mixin {
+//    add sourceSets.main, "${mod_id}.refmap.json"
+//    config "mixins.${mod_id}.json"
+//}
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
@@ -96,7 +96,7 @@ jar {
             "Implementation-Version": project.jar.archiveVersion,
             "Implementation-Vendor": mod_authors,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "mixins.${mod_id}.json"
+//            "MixinConfigs": "mixins.${mod_id}.json"
     ])
 }
 
